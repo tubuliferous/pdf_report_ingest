@@ -85,13 +85,13 @@ class ReportParser(PDFParser):
             columns=d.keys()
         )
         self.df = df
-    # Add information about revision 
-    def _update_df_revision_col(self):
+    # Add information about amendments
+    def _update_df_amendment_col(self):
         pattern_str = '[Aa]mendment sign out'
         pattern = re.compile(pattern_str, flags=re.S)
         matches = re.findall(pattern, self.text)
-        rev_count = len(matches)
-        self.df['REVISIONS'] = rev_count
+        amend_count = len(matches)
+        self.df['AMENDMENTS'] = amend_count
 
 class GNXParser(ReportParser):
     def __init__(self, pdf_file):
@@ -117,7 +117,7 @@ class GNXParser(ReportParser):
         self._update_patterns(self.gnx_patterns)
         self._loop_get_anno()
         self._generate_df()
-        self._update_df_revision_col()
+        self._update_df_amendment_col()
 
 class CGWParser(ReportParser):
     def __init__(self, pdf_file):
@@ -143,7 +143,7 @@ class CGWParser(ReportParser):
         self._update_patterns(self.cgw_patterns)
         self._loop_get_anno()
         self._generate_df() 
-        self._update_df_revision_col()
+        self._update_df_amendment_col()
 
 def main():
     import argparse
