@@ -39,15 +39,15 @@ class ReportParser(PDFParser):
             'C_SYNTAX_FAMILIAL':          {'pattern':r'', 'value':''},
             'P_SYNTAX_FAMILIAL':          {'pattern':r'', 'value':''},
             'ZYGOSITY_FAMILIAL':          {'pattern':r'', 'value':''},
-            # 'GENENAME_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            # 'CHROMOSOME_NON-FAMILIAL':    {'pattern':r'', 'value':''},
-            # 'POSITION_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            # 'REFERENCE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
-            # 'ALTERNATE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
-            # 'TRANSCRIPT_NON-FAMILIAL':    {'pattern':r'', 'value':''},
-            # 'C_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            # 'P_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            # 'ZYGOSITY_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            'GENENAME_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            'CHROMOSOME_NON-FAMILIAL':    {'pattern':r'', 'value':''},
+            'POSITION_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            'REFERENCE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
+            'ALTERNATE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
+            'TRANSCRIPT_NON-FAMILIAL':    {'pattern':r'', 'value':''},
+            'C_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            'P_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            'ZYGOSITY_NON-FAMILIAL':      {'pattern':r'', 'value':''},
             'APOE_C130R_rs429358_STATUS': {'pattern':r'', 'value':''},
             'APOE_R176C_rs7412_STATUS':   {'pattern':r'', 'value':''},
             'BDNF_V66M_rs6265_STATUS':    {'pattern':r'', 'value':''}}
@@ -207,19 +207,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-def find_files(extension, directory):
-    file_paths = []
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith(extension):
-                file_paths.append(os.path.join(root, file))
-    return file_paths
-
-pdf_paths = find_files('pdf', '/Users/tubuliferous/Dropbox/Projects/_Current Projects/Kevin Bioinformatics/pdf_report_ingest/pdfs/')
-
-for pdf_path in pdf_paths:
-    shlex.quote(pdf_path)
-    cmd = 'pdftotext -layout {}'.format(shlex.quote(pdf_path))
-    subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
