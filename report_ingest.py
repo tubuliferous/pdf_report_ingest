@@ -97,9 +97,9 @@ class GNXParser(ReportParser):
     def __init__(self, pdf_file):
         super().__init__(pdf_file)
         self.gnx_patterns = {
-            'PROTOCOL':                   r'CLINICAL GENOMICS REPORT\n+.+\n+(\w+)',
-            'SUBJECTID':                  r'CLINICAL GENOMICS REPORT\n+.+\n+\w+[,|\s+]\s+(\d+)',
-            'LGMID':                      r'Accession:\s+(\w+.+?\w*)\s',
+            'PROTOCOL':                   r'CLINICAL GENOMICS REPORT.*?(\w+),\s*.*Accession',
+            'SUBJECTID':                  r'CLINICAL GENOMICS REPORT.*?\w+,\s*(\d+).*Accession',
+            'LGMID':                      r'Accession:.*?(\w+.+?\w*)',
             'SEX':                        r'Sex:\s+(\w+)',
             'YEAROFBIRTH':                r'DOB: \d+\/\d+\/(\d+)',
             'GENENAME_FAMILIAL':          r'for the familial variant.+?([A-Z0-9][A-Z0-9]+).+APOE Genotype Status',
@@ -123,10 +123,10 @@ class CGWParser(ReportParser):
     def __init__(self, pdf_file):
         super().__init__(pdf_file   )
         self.cgw_patterns = {
-            'PROTOCOL':                   r'Name:\s+(DIAN.*?)[,|\s]',
-            'SUBJECTID':                  r'Name:\s+DIAN.*?[,|\s]\s+(\w+)',
-            'LGMID':                      r'Name:\s+DIAN.*?[,|\s]\s+\w+\s+(\w+[\-|.*]\w+)',
-            'SEX':                        r'Gender:\s+(\w+)',
+            'PROTOCOL':                   r'Name:.*?(DIAN.*?)[,|\s]',
+            'SUBJECTID':                  r'Name:.*?(\d+)',
+            'LGMID':                      r'Name:\s+\S+\s+\S+\s+(.+?)\s',
+            'SEX':                        r'Gender:\s+(\w+).+MRN',
             'YEAROFBIRTH':                r'DOB:\s+\d+/\d+/(\d+)',
             'GENENAME_FAMILIAL':          r'for the Familial Variant.+?([A-Z0-9][A-Z0-9]+).+?APOE\s+Genotype',
             'CHROMOSOME_FAMILIAL':        r'The\sfollowing\sDNA\svariant.+?(chr\w+).+\n.+NM_.+NP',
