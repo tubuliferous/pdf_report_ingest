@@ -128,7 +128,7 @@ class CGWParser(ReportParser):
             'LGMID':                      r'Name:\s+\S+\s+\S+\s+(.+?)\s',
             'SEX':                        r'Gender:\s+(\w+).+MRN',
             'YEAROFBIRTH':                r'DOB:\s+\d+/\d+/(\d+)',
-            'GENENAME_FAMILIAL':          r'for the Familial Variant.+?([A-Z0-9][A-Z0-9]+).+?APOE\s+Genotype',
+            'GENENAME_FAMILIAL':          r'for the [Ff]amilial [Vv]ariant.+?([A-Z0-9][A-Z0-9]+).+APOE Genotype Status',
             'CHROMOSOME_FAMILIAL':        r'The\sfollowing\sDNA\svariant.+?(chr\w+).+\n.+NM_.+NP',
             'POSITION_FAMILIAL':          r'The\sfollowing\sDNA\svariant.+?chr\w+:g.(\d+).+\n.+NM_.+NP',
             'REFERENCE_FAMILIAL':         r'The\sfollowing\sDNA\svariant.+?chr\w+:g\.\d+(\w)',
