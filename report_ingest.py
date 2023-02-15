@@ -39,19 +39,19 @@ class ReportParser(PDFParser):
             'C_SYNTAX_FAMILIAL':          {'pattern':r'', 'value':''},
             'P_SYNTAX_FAMILIAL':          {'pattern':r'', 'value':''},
             'ZYGOSITY_FAMILIAL':          {'pattern':r'', 'value':''},
-            'GENENAME_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            'CHROMOSOME_NON-FAMILIAL':    {'pattern':r'', 'value':''},
-            'POSITION_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            'REFERENCE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
-            'ALTERNATE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
-            'TRANSCRIPT_NON-FAMILIAL':    {'pattern':r'', 'value':''},
-            'C_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            'P_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
-            'ZYGOSITY_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            # 'GENENAME_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            # 'CHROMOSOME_NON-FAMILIAL':    {'pattern':r'', 'value':''},
+            # 'POSITION_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            # 'REFERENCE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
+            # 'ALTERNATE_NON-FAMILIAL':     {'pattern':r'', 'value':''},
+            # 'TRANSCRIPT_NON-FAMILIAL':    {'pattern':r'', 'value':''},
+            # 'C_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            # 'P_SYNTAX_NON-FAMILIAL':      {'pattern':r'', 'value':''},
+            # 'ZYGOSITY_NON-FAMILIAL':      {'pattern':r'', 'value':''},
             'APOE_C130R_rs429358_STATUS': {'pattern':r'', 'value':''},
             'APOE_R176C_rs7412_STATUS':   {'pattern':r'', 'value':''},
             'BDNF_V66M_rs6265_STATUS':    {'pattern':r'', 'value':''}}
-    
+        self.df = pd.DataFrame()
     # Update annos with report-specific regex patterns
     def _update_patterns(self, pattern_dict):
         for k,v in pattern_dict.items():
@@ -59,7 +59,6 @@ class ReportParser(PDFParser):
             self.annos[k]['pattern'] = v
 
     def _get_anno(self, anno_name, pattern_str):
-
         # pattern = re.compile(pattern_str, flags=re.IGNORECASE)
         pattern = re.compile(pattern_str, flags=re.S)
         # pattern = re.compile(pattern_str)
@@ -77,16 +76,22 @@ class ReportParser(PDFParser):
                 self._get_anno(anno_key, self.annos[anno_key]['pattern'])
                 # print(self.annos[anno_key]['pattern'])
             except:
-                print('        ERROR: Couldn\'t get {} from PDF'.format(anno_key), end='\n')
-
+                print("        ERROR: Couldn't get {} from PDF".format(anno_key), end='\n')
+    # Make single-line DataFrame from annotations of interest from reports
     def _generate_df(self):
         d = self.annos
         df = pd.DataFrame(
             {k: [v['value']] for k, v in d.items()},
             columns=d.keys()
         )
-        # return df.to_string(index=False))
-        return df
+        self.df = df
+    # Add information about revision 
+    def _update_df_revision_col(self):
+        pattern_str = '[Aa]mendment sign out'
+        pattern = re.compile(pattern_str, flags=re.S)
+        matches = re.findall(pattern, self.text)
+        rev_count = len(matches)
+        self.df['REVISIONS'] = rev_count
 
 class GNXParser(ReportParser):
     def __init__(self, pdf_file):
@@ -111,7 +116,8 @@ class GNXParser(ReportParser):
             'BDNF_V66M_rs6265_STATUS':    r'BDNF Genotype Status.+([Hh]etero\w+|[Hh]omo\w+).+was\s+detected'}
         self._update_patterns(self.gnx_patterns)
         self._loop_get_anno()
-        self.df = self._generate_df()
+        self._generate_df()
+        self._update_df_revision_col()
 
 class CGWParser(ReportParser):
     def __init__(self, pdf_file):
@@ -136,7 +142,8 @@ class CGWParser(ReportParser):
             'BDNF_V66M_rs6265_STATUS':    r'BDNF Genotype Status.+([Hh]etero\w+|[Hh]omo\w+).+was\s+detected'}
         self._update_patterns(self.cgw_patterns)
         self._loop_get_anno()
-        self.df = self._generate_df() 
+        self._generate_df() 
+        self._update_df_revision_col()
 
 def main():
     import argparse
@@ -198,12 +205,11 @@ def main():
         return pdf_df_list
         
     # Get PDF DataFrames list
-    # print(args.dir)
     df_list = get_pdf_dfs(args.dir)
     # Concatenate list of DataFrames int a single DataFrame
     collapsed_df = pd.concat(df_list)
     # Write to Excel spreadsheet
     collapsed_df.to_csv(args.out, index=False, sep='\t')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
