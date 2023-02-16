@@ -100,7 +100,13 @@ class ReportParser(PDFParser):
         bdnf_count = len(matches)
         if bdnf_count == 0:
             self.df['BDNF_V66M_rs6265_STATUS'] = "NA"
-        
+    def _update_app_gene_dupplication(self):
+        pattern_str = 'APP.+duplication|duplication.+APP'
+        pattern = re.compile(pattern_str, flags=re.IGNORECASE)
+        matches = re.findall(pattern, self.text) 
+        match_found = len(matches)
+        if match_found > 0:
+            self.df['GENENAME_FAMILIAL'] = "potential APP duplication" 
 
 class GNXParser(ReportParser):
     def __init__(self, pdf_file):
@@ -128,6 +134,7 @@ class GNXParser(ReportParser):
         self._generate_df()
         self._update_df_amendment_col()
         self._update_df_BDNF_anno()
+        self._update_app_gene_dupplication()
 
 class CGWParser(ReportParser):
     def __init__(self, pdf_file):
@@ -155,6 +162,7 @@ class CGWParser(ReportParser):
         self._generate_df() 
         self._update_df_amendment_col()
         self._update_df_BDNF_anno()
+        self._update_app_gene_dupplication()
 
 def main():
     import argparse
