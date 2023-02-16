@@ -92,6 +92,15 @@ class ReportParser(PDFParser):
         matches = re.findall(pattern, self.text)
         amend_count = len(matches)
         self.df['AMENDMENTS'] = amend_count
+    
+    def _update_df_BDNF_anno(self):
+        pattern_str = 'BDNF'
+        pattern = re.compile(pattern_str, flags=re.S)
+        matches = re.findall(pattern, self.text) 
+        bdnf_count = len(matches)
+        if bdnf_count == 0:
+            self.df['BDNF_V66M_rs6265_STATUS'] = "NA"
+        
 
 class GNXParser(ReportParser):
     def __init__(self, pdf_file):
@@ -118,6 +127,7 @@ class GNXParser(ReportParser):
         self._loop_get_anno()
         self._generate_df()
         self._update_df_amendment_col()
+        self._update_df_BDNF_anno()
 
 class CGWParser(ReportParser):
     def __init__(self, pdf_file):
@@ -144,6 +154,7 @@ class CGWParser(ReportParser):
         self._loop_get_anno()
         self._generate_df() 
         self._update_df_amendment_col()
+        self._update_df_BDNF_anno()
 
 def main():
     import argparse
@@ -177,7 +188,7 @@ def main():
         gnx_pattern = re.compile(gnx_pattern_str, flags=re.IGNORECASE | re.S)
         gnx_match = re.search(gnx_pattern, this_pdf.text)
         # Check for cgw distinguisher
-        cgw_color_pattern_str = r'Page 1.*version CGW'
+        cgw_color_pattern_str = r'Clinical\s+Genomics.+?Genomics and Pathology Services.+Page\s+1'
         cgw_color_pattern = re.compile(cgw_color_pattern_str, flags=re.IGNORECASE | re.S)
         cgw_color_match = re.search(cgw_color_pattern, this_pdf.text)
         pdf_type = ''
