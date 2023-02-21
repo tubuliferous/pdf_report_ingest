@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # NOTE - Relies on unix commandline tool pdftotext from poppler to do PDF conversion
+# Usage:
+# ./report_ingest.py -d pdfs_directory -o output.tsv
+# or:
+# ./report_ingest.py --dir pdfs_directory --out output.tsv
+
 import re
 import subprocess
 import pandas as pd
@@ -28,6 +33,7 @@ class ReportParser(PDFParser):
             'PROTOCOL':                   {'pattern':r'', 'value':''},
             'SUBJECTID':                  {'pattern':r'', 'value':''},
             'LGMID':                      {'pattern':r'', 'value':''},
+            'MRN':                        {'pattern':r'', 'value':''}, 
             'SEX':                        {'pattern':r'', 'value':''},
             'YEAROFBIRTH':                {'pattern':r'', 'value':''},
             'GENENAME_FAMILIAL':          {'pattern':r'', 'value':''},
@@ -115,6 +121,7 @@ class GNXParser(ReportParser):
             'PROTOCOL':                   r'CLINICAL GENOMICS REPORT.*?(\w+),\s*.*Accession',
             'SUBJECTID':                  r'CLINICAL GENOMICS REPORT.*?\w+,\s*(\d+).*Accession',
             'LGMID':                      r'Accession:.*?(\w+.+?\w*)',
+            'MRN':                        r'MRN.+?(\w+)',
             'SEX':                        r'Sex:\s+(\w+)',
             'YEAROFBIRTH':                r'DOB: \d+\/\d+\/(\d+)',
             'GENENAME_FAMILIAL':          r'for the familial variant.+?([A-Z0-9][A-Z0-9]+).+APOE Genotype Status',
@@ -143,6 +150,7 @@ class CGWParser(ReportParser):
             'PROTOCOL':                   r'Name:.*?(DIAN.*?)[,|\s]',
             'SUBJECTID':                  r'Name:.*?(\d+)',
             'LGMID':                      r'Name:\s+\S+\s+\S+\s+(.+?)\s',
+            'MRN':                        r'MRN.+?(\w+)',
             'SEX':                        r'Gender:\s+(\w+).+MRN',
             'YEAROFBIRTH':                r'DOB:\s+\d+/\d+/(\d+)',
             'GENENAME_FAMILIAL':          r'[POSITIVE|NEGATIVE]\s+for the [Ff]amilial [Vv]ariant.+?([A-Z0-9][A-Z0-9]+).+APOE Genotype Status',
